@@ -5,12 +5,15 @@ use libc;
 
 pub struct Rusage(libc::rusage);
 
-impl Rusage {
-    pub fn children() -> Self {
-        let mut data = unsafe { mem::uninitialized() };
-        let _result = get_resource_usage(&mut data);
+pub type Errno = os::raw::c_int;
 
-        Rusage(data)
+impl Rusage {
+    pub fn children() -> Result<Self, Errno> {
+        get_resource_usage(libc::RUSAGE_CHILDREN).map(Rusage)
+    }
+
+    pub fn current() -> Result<Self, Errno> {
+        get_resource_usage(libc::RUSAGE_SELF).map(Rusage)
     }
 
     pub fn data(&self) -> Vec<(&'static str, i64)> {
@@ -37,8 +40,14 @@ impl Rusage {
     }
 }
 
-fn get_resource_usage(data: &mut libc::rusage) -> os::raw::c_int {
-    let result = unsafe { libc::getrusage(libc::RUSAGE_CHILDREN, data) };
+fn get_resource_usage(who: os::raw::c_int) -> Result<libc::rusage, Errno> {
+    let mut data = unsafe { mem::uninitialized() };
 
-    result
+    let result = unsafe { libc::getrusage(who, &mut data) };
+
+    if result == -1 {
+        Err(unsafe { *libc::__errno_location() })
+    } else {
+        Ok(data)
+    }
 }
