@@ -3,5 +3,9 @@ name = "getrusage"
 version = "0.1.0"
 authors = ["Anler Hernández Peral <inbox.anler@gmail.com>"]
 edition = "2018"
+description = "Get information about resource utilization. Wrapper for GETRUSAGE (3P)."
 
 [dependencies]
+clap = "2.33.0"
+libc = "0.2.51"
+colorful = "0.2.1"
