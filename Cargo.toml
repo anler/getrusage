@@ -3,7 +3,9 @@ name = "getrusage"
 version = "0.1.0"
 authors = ["Anler Hernández Peral <inbox.anler@gmail.com>"]
 edition = "2018"
+repository = "https://github.com/anler/getrusage"
 description = "Get information about resource utilization. Wrapper for GETRUSAGE (3P)."
+license-file = "UNLICENSE"
 
 [dependencies]
 clap = "2.33.0"
