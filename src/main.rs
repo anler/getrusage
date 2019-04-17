@@ -2,7 +2,7 @@ use std::process;
 
 #[macro_use]
 extern crate clap;
-use colorful::Colorful;
+use colored::*;
 
 mod rusage;
 mod tty;
@@ -25,6 +25,7 @@ is printed."#,
         ));
     let matches = app.get_matches();
 
+    let use_color = !matches.is_present("nocolor");
     let result = matches.values_of_os("command").map_or_else(
         || Ok(Box::new(rusage::Rusage::current) as Box<Fn() -> Result<Rusage, Errno>>),
         |mut args| {
@@ -54,10 +55,10 @@ is printed."#,
         .map(|usage| {
             println!("\n---------------------------\n");
             usage.data().iter().for_each(|(name, value)| {
-                let label = if tty::in_tty() {
+                let label = if tty::in_tty() && use_color {
                     name.bold()
                 } else {
-                    name.dim()
+                    name.normal()
                 };
 
                 println!("{}: {}", label, value);
